@@ -1,13 +1,15 @@
-"use client";
-
 import { useState, useCallback } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { RequestBuilder } from "@/components/RequestBuilder";
 import { LoadTesting } from "@/components/LoadTesting";
 import { Collections } from "@/components/Collections";
+// import { CommandPalette } from "@/components/CommandPalette";
+// import { RequestHistory } from "@/components/RequestHistory";
+// import { SettingsPage } from "@/components/SettingsPage";
+// import { MockServers } from "@/components/MockServers";
 import type { SavedRequest } from "@/components/Collections";
 import { motion } from "framer-motion";
-import { History, Globe, FileCode, Users, Settings } from "lucide-react";
+import { Globe, Users, Settings } from "lucide-react";
 
 const PlaceholderPanel = ({
   title,
@@ -28,24 +30,34 @@ const PlaceholderPanel = ({
 );
 
 const panelMap: Record<string, { title: string; icon: any }> = {
-  history: { title: "Request History", icon: History },
   environments: { title: "Environments", icon: Globe },
-  mocks: { title: "Mock Servers", icon: FileCode },
   team: { title: "Team", icon: Users },
-  settings: { title: "Settings", icon: Settings },
 };
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("api");
   const [loadedRequest, setLoadedRequest] = useState<SavedRequest | null>(null);
+  const [loadTestRequest, setLoadTestRequest] = useState<SavedRequest | null>(
+    null,
+  );
 
   const handleLoadRequest = useCallback((req: SavedRequest) => {
     setLoadedRequest(req);
     setActiveTab("api");
   }, []);
 
+  const handleLoadToLoadTest = useCallback((req: SavedRequest) => {
+    setLoadTestRequest(req);
+    setActiveTab("loadtest");
+  }, []);
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
+      {/* <CommandPalette
+        onNavigate={setActiveTab}
+        onLoadRequest={handleLoadRequest}
+        onLoadToLoadTest={handleLoadToLoadTest}
+      /> */}
       <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <motion.main
         key={activeTab}
@@ -59,11 +71,26 @@ const Index = () => {
             initialRequest={loadedRequest}
             onRequestLoaded={() => setLoadedRequest(null)}
           />
-        ) : activeTab === "loadtest" ? (
-          <LoadTesting />
-        ) : activeTab === "collections" ? (
-          <Collections onLoadRequest={handleLoadRequest} />
         ) : (
+          // ) : activeTab === "loadtest" ? (
+          //   <LoadTesting
+          //     initialRequest={loadTestRequest}
+          //     onRequestLoaded={() => setLoadTestRequest(null)}
+          //   />
+          // ) : activeTab === "collections" ? (
+          //   <Collections
+          //     onLoadRequest={handleLoadRequest}
+          //     onLoadToLoadTest={handleLoadToLoadTest}
+          //   />
+          // ) : activeTab === "history" ? (
+          //   <RequestHistory
+          //     onLoadRequest={handleLoadRequest}
+          //     onLoadToLoadTest={handleLoadToLoadTest}
+          //   />
+          // ) : activeTab === "settings" ? (
+          //   <SettingsPage />
+          // ) : activeTab === "mocks" ? (
+          //   <MockServers />
           <PlaceholderPanel
             {...(panelMap[activeTab] || { title: "Unknown", icon: Settings })}
           />
